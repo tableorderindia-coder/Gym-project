@@ -21,7 +21,19 @@ export function getEnv(input: NodeJS.ProcessEnv = process.env): Env {
 }
 
 export function getPublicSupabaseEnv(input: NodeJS.ProcessEnv = process.env) {
-  return publicSupabaseEnvSchema.parse(input);
+  const result = publicSupabaseEnvSchema.safeParse(input);
+
+  if (!result.success) {
+    const missing = result.error.issues
+      .map((i) => i.path.join("."))
+      .join(", ");
+    throw new Error(
+      `Missing Supabase environment variables: ${missing}. ` +
+        `Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your Vercel project settings and redeploy.`
+    );
+  }
+
+  return result.data;
 }
 
 export function getSupabaseServiceRoleEnv(

@@ -56,39 +56,49 @@ export function LoginForm({ nextPath }: LoginFormProps) {
     setPending(true);
     setError(null);
 
-    const supabase = createSupabaseBrowserClient();
+    try {
+      const supabase = createSupabaseBrowserClient();
 
-    if (mode === "login") {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      if (mode === "login") {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-      if (signInError) {
-        setError(signInError.message);
+        if (signInError) {
+          setError(signInError.message);
+          setPending(false);
+          return;
+        }
+
+        // Redirect after successful login
+        window.location.href = nextPath || "/dashboard";
+      } else {
+        // Sign up
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent(nextPath || "/setup")}`,
+          },
+        });
+
+        if (signUpError) {
+          setError(signUpError.message);
+          setPending(false);
+          return;
+        }
+
+        setSignupSuccess(true);
         setPending(false);
-        return;
       }
-
-      // Redirect after successful login
-      window.location.href = nextPath || "/dashboard";
-    } else {
-      // Sign up
-      const { error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent(nextPath || "/setup")}`,
-        },
-      });
-
-      if (signUpError) {
-        setError(signUpError.message);
-        setPending(false);
-        return;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "An unexpected error occurred.";
+      if (message.includes("NEXT_PUBLIC_SUPABASE")) {
+        setError("Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in your environment.");
+      } else {
+        setError(message);
       }
-
-      setSignupSuccess(true);
       setPending(false);
     }
   }
