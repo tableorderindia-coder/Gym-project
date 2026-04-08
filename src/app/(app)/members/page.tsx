@@ -3,6 +3,15 @@ import { PageHeader } from "@/components/ui/page-header";
 import { StatusPill } from "@/components/ui/status-pill";
 import { fetchMembers } from "@/features/members/actions";
 
+type MemberState = "ACTIVE" | "EXPIRING" | "EXPIRED" | "LOST";
+
+type Member = {
+  id: string;
+  full_name: string;
+  notes: string | null;
+  state: MemberState;
+};
+
 export default async function MembersPage() {
   const { members = [], error } = await fetchMembers();
 
@@ -15,9 +24,9 @@ export default async function MembersPage() {
   }
 
   const stats = {
-    ACTIVE: members.filter((m: any) => m.state === "ACTIVE").length,
-    EXPIRING: members.filter((m: any) => m.state === "EXPIRING").length,
-    EXPIRED: members.filter((m: any) => m.state === "EXPIRED").length,
+    ACTIVE: members.filter((m: Member) => m.state === "ACTIVE").length,
+    EXPIRING: members.filter((m: Member) => m.state === "EXPIRING").length,
+    EXPIRED: members.filter((m: Member) => m.state === "EXPIRED").length,
   };
 
   const statCards = [
@@ -83,7 +92,7 @@ export default async function MembersPage() {
               No members found yet.
             </p>
           ) : (
-            members.map((member: any) => (
+            members.map((member: Member) => (
               <div
                 key={member.id}
                 className="flex flex-col gap-2 rounded-xl px-4 py-4 transition-all sm:flex-row sm:items-center sm:justify-between"
@@ -100,7 +109,7 @@ export default async function MembersPage() {
                     {member.notes || "No notes added"}
                   </p>
                 </div>
-                <StatusPill state={member.state as any} />
+                <StatusPill state={member.state} />
               </div>
             ))
           )}

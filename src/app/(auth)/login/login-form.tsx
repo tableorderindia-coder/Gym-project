@@ -71,8 +71,12 @@ export function LoginForm({ nextPath }: LoginFormProps) {
           return;
         }
 
-        // Redirect after successful login
-        window.location.href = nextPath || "/dashboard";
+        // Keep navigation in-app after successful login.
+        router.refresh();
+        const destination = (nextPath || "/dashboard") as Parameters<
+          typeof router.replace
+        >[0];
+        router.replace(destination);
       } else {
         // Sign up
         const { error: signUpError } = await supabase.auth.signUp({

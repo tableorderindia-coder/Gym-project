@@ -4,6 +4,14 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { PageHeader } from "@/components/ui/page-header";
 import { fetchAttendanceToday, fetchAttendanceStats } from "@/features/attendance/actions";
 
+type AttendanceLog = {
+  id: string;
+  check_in_at: string;
+  member?: {
+    full_name: string | null;
+  } | null;
+};
+
 export default async function AttendancePage() {
   const [{ attendance = [], error: attendanceError }, { todayCount = 0, recentVisits = [] }] = await Promise.all([
     fetchAttendanceToday(),
@@ -102,7 +110,7 @@ export default async function AttendancePage() {
               No check-ins recorded for today yet.
             </p>
           ) : (
-            attendance.map((log: any) => (
+            attendance.map((log: AttendanceLog) => (
               <div
                 key={log.id}
                 className="flex items-center justify-between rounded-xl px-4 py-4"

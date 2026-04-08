@@ -23,7 +23,7 @@ describe("LoginPage", () => {
       screen.getByRole("heading", { name: /sign in to gym growth os/i }),
     ).toBeTruthy();
     expect(screen.getByLabelText(/email address/i)).toBeTruthy();
-    expect(screen.getByLabelText(/password/i)).toBeTruthy();
+    expect(screen.getByLabelText(/^password$/i)).toBeTruthy();
     expect(
       screen.getByRole("button", { name: /sign in/i }),
     ).toBeTruthy();

@@ -9,7 +9,7 @@ describe("Home", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: /growth and retention tooling for single-location gyms/i,
+        name: /gym growth os/i,
       }),
     ).toBeTruthy();
   });
