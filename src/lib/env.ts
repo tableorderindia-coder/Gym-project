@@ -17,11 +17,17 @@ export type SupabaseServiceRoleEnv = z.infer<
 >;
 
 export function getEnv(input: NodeJS.ProcessEnv = process.env): Env {
-  return envSchema.parse(input);
+  return envSchema.parse({
+    NEXT_PUBLIC_SUPABASE_URL: input.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: input.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  });
 }
 
 export function getPublicSupabaseEnv(input: NodeJS.ProcessEnv = process.env) {
-  const result = publicSupabaseEnvSchema.safeParse(input);
+  const result = publicSupabaseEnvSchema.safeParse({
+    NEXT_PUBLIC_SUPABASE_URL: input.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: input.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  });
 
   if (!result.success) {
     const missing = result.error.issues
@@ -39,5 +45,7 @@ export function getPublicSupabaseEnv(input: NodeJS.ProcessEnv = process.env) {
 export function getSupabaseServiceRoleEnv(
   input: NodeJS.ProcessEnv = process.env,
 ): SupabaseServiceRoleEnv {
-  return supabaseServiceRoleEnvSchema.parse(input);
+  return supabaseServiceRoleEnvSchema.parse({
+    SUPABASE_SERVICE_ROLE_KEY: input.SUPABASE_SERVICE_ROLE_KEY,
+  });
 }
