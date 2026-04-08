@@ -23,11 +23,15 @@ export function getEnv(input: NodeJS.ProcessEnv = process.env): Env {
   });
 }
 
-export function getPublicSupabaseEnv(input: NodeJS.ProcessEnv = process.env) {
-  const result = publicSupabaseEnvSchema.safeParse({
-    NEXT_PUBLIC_SUPABASE_URL: input.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: input.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  });
+export function getPublicSupabaseEnv(input?: NodeJS.ProcessEnv) {
+  // Keep direct process.env reads for NEXT_PUBLIC_* so Next.js can inline them
+  // into client bundles during build.
+  const source = input ?? {
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  };
+
+  const result = publicSupabaseEnvSchema.safeParse(source);
 
   if (!result.success) {
     const missing = result.error.issues
